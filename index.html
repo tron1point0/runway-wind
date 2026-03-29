@@ -249,25 +249,25 @@
     <div class="controls-section">
       <div class="wind-speed-control">
         <span class="wind-speed-label">Wind</span>
-        <input type="range" class="wind-speed-slider" id="windSpeedSlider" min="0" max="30" value="10">
-        <span class="wind-speed-value" id="windSpeedValue">10 kt</span>
+        <input type="range" class="wind-speed-slider" id="windSpeedSlider" min="0" max="30" value="15">
+        <span class="wind-speed-value" id="windSpeedValue">15 kt</span>
       </div>
       
       <div class="results">
         <div class="result-item">
           <div class="result-label" id="headwindLabel">HEADWIND</div>
-          <div class="result-value headwind" id="headwindValue">8</div>
+          <div class="result-value headwind" id="headwindValue">0</div>
           <div class="result-unit">kt</div>
         </div>
         <div class="result-item">
           <div class="result-label" id="crosswindLabel">CROSSWIND</div>
-          <div class="result-value crosswind" id="crosswindValue">6</div>
+          <div class="result-value crosswind" id="crosswindValue">0</div>
           <div class="result-unit">kt</div>
         </div>
       </div>
       
       <div class="wind-direction-display">
-        Wind: <span id="windDirectionDisplay">000°</span> | Runway: <span id="runwayDirectionDisplay">270°</span>
+        Wind: <span id="windDirectionDisplay">030°</span> | Runway: <span id="runwayDirectionDisplay">150°</span>
       </div>
     </div>
   </div>
@@ -288,9 +288,9 @@
     const compassTicks = document.getElementById('compassTicks');
     const compassLabels = document.getElementById('compassLabels');
 
-    let runwayHeading = 270;
-    let windHeading = 0;
-    let windSpeed = 10;
+    let runwayHeading = 150;
+    let windHeading = 30;
+    let windSpeed = 15;
     let isDragging = false;
     let dragTarget = null;
     let pointerDownPos = { x: 0, y: 0 };
@@ -329,19 +329,31 @@
           const lx = centerX + labelR * Math.cos(rad);
           const ly = centerY + labelR * Math.sin(rad);
           
-          const labels = ['N', 'E', 'S', 'W'];
-          const labelIdx = deg / 90;
-          
-          const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          label.setAttribute('x', lx.toFixed(2));
-          label.setAttribute('y', ly.toFixed(2));
-          label.setAttribute('font-size', '7');
-          label.setAttribute('font-weight', 'bold');
-          label.setAttribute('fill', deg === 0 ? '#ef4444' : 'var(--compass-labels)');
-          label.setAttribute('text-anchor', 'middle');
-          label.setAttribute('dominant-baseline', 'middle');
-          label.textContent = labels[labelIdx];
-          compassLabels.appendChild(label);
+          if (deg % 90 === 0) {
+            const labels = ['N', 'E', 'S', 'W'];
+            const labelIdx = deg / 90;
+            
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('x', lx.toFixed(2));
+            label.setAttribute('y', ly.toFixed(2));
+            label.setAttribute('font-size', '7');
+            label.setAttribute('font-weight', 'bold');
+            label.setAttribute('fill', deg === 0 ? '#ef4444' : 'var(--compass-labels)');
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('dominant-baseline', 'middle');
+            label.textContent = labels[labelIdx];
+            compassLabels.appendChild(label);
+          } else {
+            const numLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            numLabel.setAttribute('x', lx.toFixed(2));
+            numLabel.setAttribute('y', ly.toFixed(2));
+            numLabel.setAttribute('font-size', '3.5');
+            numLabel.setAttribute('fill', 'var(--compass-ticks)');
+            numLabel.setAttribute('text-anchor', 'middle');
+            numLabel.setAttribute('dominant-baseline', 'middle');
+            numLabel.textContent = deg.toString();
+            compassLabels.appendChild(numLabel);
+          }
         }
       }
     }
@@ -458,8 +470,7 @@
 
 
     function calculateComponents() {
-      const windFromHeading = (windHeading + 180) % 360;
-      const delta = (windFromHeading - runwayHeading + 360) % 360;
+      const delta = (windHeading - runwayHeading + 360) % 360;
       const deltaRad = delta * Math.PI / 180;
       
       const signedHeadwind = Math.round(windSpeed * Math.cos(deltaRad));
@@ -481,7 +492,7 @@
         crosswindValue.style.color = 'var(--accent-red)';
       }
       
-      windDirectionDisplay.textContent = String(windFromHeading).padStart(3, '0') + '°';
+      windDirectionDisplay.textContent = String(windHeading).padStart(3, '0') + '°';
       runwayDirectionDisplay.textContent = String(runwayHeading).padStart(3, '0') + '°';
     }
 
@@ -540,7 +551,7 @@
       const { angle } = getAngleFromEvent(e);
       
       if (dragTarget === 'runway') {
-        runwayHeading = snapAngle(angle + 180, 'runway');
+        runwayHeading = snapAngle(angle, 'runway');
         updateRunwayRotation();
       } else {
         windHeading = snapAngle(angle, 'wind');
