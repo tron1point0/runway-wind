@@ -431,7 +431,7 @@
     }
 
     function updateWindArrow() {
-      const rad = (windHeading - 90) * Math.PI / 180;
+      const rad = (windHeading + 180 - 90) * Math.PI / 180;
       
       const length = 44;
       const headLength = 10;
