@@ -1,0 +1,17 @@
+{
+  "name": "Runway Crosswind Calculator",
+  "short_name": "Runway Wind",
+  "description": "Offline runway crosswind and headwind calculator for pilots",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1a2e",
+  "theme_color": "#1a1a2e",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

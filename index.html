@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Runway Crosswind Calculator</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a1a2e">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
   <style>
     :root {
       --bg-primary: #1a1a2e;
@@ -596,6 +599,10 @@
     updateRunwayRotation();
     updateWindArrow();
     calculateComponents();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
   </script>
 </body>
 </html>
